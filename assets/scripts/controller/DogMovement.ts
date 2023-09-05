@@ -10,6 +10,10 @@ export  class DogMovement {
 
     public speed: number = 10
     
+    // GETTER
+    public get dogComponent(): DogComponent {
+        return this._dogComponent
+    }
 
     // INIT
     public constructor(canvas: Node) {
@@ -65,7 +69,11 @@ export  class DogMovement {
                 this._directionList[1] = 1
                 
                 break
-        }   
+        }
+        
+        const direction = this.getDirection()
+        this._dogComponent.playAnimation(direction)
+        
     }
 
     private onKeyUp (event: EventKeyboard){
@@ -73,15 +81,16 @@ export  class DogMovement {
             case KeyCode.KEY_A:
             case KeyCode.ARROW_LEFT:                
                delete this._directionList[-1]
-
-                break
+               break
 
             case KeyCode.KEY_D:
             case KeyCode.ARROW_RIGHT:
                 delete this._directionList[1]
-                
                 break
-        }         
+        }       
+        
+        const direction = this.getDirection()
+        this._dogComponent.playAnimation(direction)
     }
 
     // CLEAR
