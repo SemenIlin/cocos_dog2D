@@ -1,5 +1,6 @@
 import { _decorator, EventKeyboard, Input, input, KeyCode, Node, Vec3 } from 'cc';
 import { DogComponent } from '../component/DogComponent';
+import { Bound } from '../tools/Bound';
 const { ccclass } = _decorator;
 
 @ccclass('DogMovement')

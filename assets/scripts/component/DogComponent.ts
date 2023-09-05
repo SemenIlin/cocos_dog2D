@@ -20,12 +20,18 @@ export class DogComponent extends Component {
                 break
 
             default:
+                this.flipMirror()
                 this.dogAnimation.play("idle")
         }        
     }
 
     private flip(direction: number){
-        this._currentScale.x = direction
+        this._currentScale.x = direction        
+        this.node.scale = this._currentScale
+    }
+
+    private flipMirror(){
+        this._currentScale.x *= -1 
         this.node.scale = this._currentScale
     }
 }
