@@ -1,4 +1,4 @@
-import { _decorator, Component, Animation, Vec3, UITransform } from 'cc';
+import { _decorator, Component, Animation, Vec3, UITransform, AnimationClip } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('DogComponent')
@@ -22,7 +22,15 @@ export class DogComponent extends Component {
             default:
                 this.flipMirror()
                 this.dogAnimation.play("idle")
-        }        
+        }         
+    }
+
+    public pauseAnimation(){
+        this.dogAnimation.pause()
+    }
+
+    public resumeAnimation(){
+        this.dogAnimation.resume()
     }
 
     private flip(direction: number){

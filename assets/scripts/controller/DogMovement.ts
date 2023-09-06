@@ -1,6 +1,7 @@
 import { _decorator, EventKeyboard, Input, input, KeyCode, Node, Vec3 } from 'cc';
 import { DogComponent } from '../component/DogComponent';
 import { Bound } from '../tools/Bound';
+import { GlobalEvent } from '../event/GlobalEvent';
 const { ccclass } = _decorator;
 
 @ccclass('DogMovement')
@@ -22,6 +23,9 @@ export  class DogMovement {
         
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+
+        GlobalEvent.on("PAUSE", this.onPause, this)
+        GlobalEvent.on("PLAY", this.onPlay, this)
     }
 
     // PUBLIC
@@ -46,6 +50,24 @@ export  class DogMovement {
         }
     }
 
+    // PRIVATE
+    private onPause() {
+        this._dogComponent.pauseAnimation()
+        this._directionList = {}
+
+        input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+        input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
+    }
+
+    private onPlay() {
+        this._dogComponent.resumeAnimation()
+        // const direction = this.getDirection()
+        // this._dogComponent.playAnimation(direction)
+
+        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+        input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+    }
+
     private getDirection(): number{
         let result = 0
 
@@ -56,7 +78,6 @@ export  class DogMovement {
         return result
     }
 
-    // PRIVATE
     private onKeyDown(event: EventKeyboard){
         switch(event.keyCode){
             case KeyCode.KEY_A:
@@ -73,8 +94,7 @@ export  class DogMovement {
         }
         
         const direction = this.getDirection()
-        this._dogComponent.playAnimation(direction)
-        
+        this._dogComponent.playAnimation(direction)        
     }
 
     private onKeyUp (event: EventKeyboard){
@@ -98,6 +118,9 @@ export  class DogMovement {
     public clear(){
         input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
+
+        GlobalEvent.off("PAUSE", this.onPause, this)
+        GlobalEvent.off("PLAY", this.onPlay, this)
 
         this._directionList = {}
         this._dogComponent = null
