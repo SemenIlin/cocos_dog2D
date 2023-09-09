@@ -3,4 +3,6 @@ export enum GlobalEventName {
 
   PAUSE,
   PLAY,
+
+  DIRECTION_CHANGED
 }

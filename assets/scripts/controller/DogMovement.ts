@@ -1,14 +1,13 @@
-import { _decorator, EventKeyboard, Input, input, KeyCode, Node, Vec3 } from 'cc';
+import { _decorator, EventKeyboard, EventTouch, Input, input, KeyCode, Node, SystemEvent, Vec3 } from 'cc';
 import { DogComponent } from '../component/DogComponent';
-import { Bound } from '../tools/Bound';
 import { GlobalEvent } from '../event/GlobalEvent';
+import { PlayerData } from '../data/PlayerData';
 const { ccclass } = _decorator;
 
 @ccclass('DogMovement')
 export  class DogMovement {
     // STATE
-    private _dogComponent: DogComponent
-    private _directionList: { [key:number] : number } = {}
+    private _dogComponent: DogComponent    
 
     public speed: number = 10
     
@@ -19,21 +18,23 @@ export  class DogMovement {
 
     // INIT
     public constructor(canvas: Node) {
-        this._dogComponent = canvas.getComponentInChildren(DogComponent)
+        this._dogComponent = canvas.getComponentInChildren(DogComponent)     
         
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
 
         GlobalEvent.on("PAUSE", this.onPause, this)
         GlobalEvent.on("PLAY", this.onPlay, this)
+
+        GlobalEvent.on("DIRECTION_CHANGED",this.changeDirection, this)
     }
 
-    // PUBLIC
+    // INTERFACE
     public move(){
-        if (Object.keys( this._directionList).length == 0) return
+        if (Object.keys(PlayerData.directionList).length == 0) return
 
         let currentPosition: Vec3 = this._dogComponent.node.position
-        let direction = this.getDirection()
+        let direction = PlayerData.getDirection()
 
         switch(direction){
             case -1:
@@ -51,9 +52,15 @@ export  class DogMovement {
     }
 
     // PRIVATE
+
+    private changeDirection(){
+        const direction = PlayerData.getDirection()
+        this._dogComponent.playAnimation(direction)    
+    }
+
     private onPause() {
         this._dogComponent.pauseAnimation()
-        this._directionList = {}
+        PlayerData.clearDirection()
 
         input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
@@ -61,58 +68,40 @@ export  class DogMovement {
 
     private onPlay() {
         this._dogComponent.resumeAnimation()
-        // const direction = this.getDirection()
-        // this._dogComponent.playAnimation(direction)
 
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
-    }
-
-    private getDirection(): number{
-        let result = 0
-
-        for (let key in this._directionList){
-            result += this._directionList[key]
-        }
-
-        return result
-    }
+    }   
 
     private onKeyDown(event: EventKeyboard){
         switch(event.keyCode){
             case KeyCode.KEY_A:
             case KeyCode.ARROW_LEFT:                
-                this._directionList[-1] = -1
+                PlayerData.setDirection(-1)
 
                 break
 
             case KeyCode.KEY_D:
             case KeyCode.ARROW_RIGHT:
-                this._directionList[1] = 1
+                PlayerData.setDirection(1)
                 
                 break
-        }
-        
-        const direction = this.getDirection()
-        this._dogComponent.playAnimation(direction)        
+        }            
     }
 
     private onKeyUp (event: EventKeyboard){
         switch(event.keyCode){
             case KeyCode.KEY_A:
             case KeyCode.ARROW_LEFT:                
-               delete this._directionList[-1]
+               PlayerData.deleteDirection(-1)
                break
 
             case KeyCode.KEY_D:
             case KeyCode.ARROW_RIGHT:
-                delete this._directionList[1]
+                PlayerData.deleteDirection(1)
                 break
-        }       
-        
-        const direction = this.getDirection()
-        this._dogComponent.playAnimation(direction)
-    }
+        }    
+    }    
 
     // CLEAR
     public clear(){
@@ -121,8 +110,9 @@ export  class DogMovement {
 
         GlobalEvent.off("PAUSE", this.onPause, this)
         GlobalEvent.off("PLAY", this.onPlay, this)
-
-        this._directionList = {}
+        GlobalEvent.off("DIRECTION_CHANGED",this.changeDirection, this)
+        PlayerData.clearDirection()
+        
         this._dogComponent = null
     }
 }

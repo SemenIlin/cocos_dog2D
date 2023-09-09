@@ -5,6 +5,7 @@ import { CoinComponent } from '../component/CoinComponent';
 import { CoinController } from '../controller/CoinController'
 import { ScoreController } from '../controller/UI/ScoreController';
 import { UIController } from '../controller/UI/UIController';
+import { PlayerTouchControl } from '../controller/PlayerTouchControl';
 const { ccclass, property } = _decorator;
 
 @ccclass('MainComponent')
@@ -31,6 +32,8 @@ export class MainComponent extends Component {
     private _coinController: CoinController = null
     private _scoreController: ScoreController = null
     private _UIController: UIController = null
+    private _touchControll: PlayerTouchControl = null
+
     private _halfHeight: number
 
     // INIT
@@ -42,6 +45,7 @@ export class MainComponent extends Component {
         this._coinController = new CoinController(this.timeForSpawn, this.minSpeed, this.maxSpeed, this.coinPrefab, this.transform)
         this._scoreController = new ScoreController(node)
         this._UIController = new UIController(node)
+        this._touchControll = new PlayerTouchControl(node)
 
         this._bound = new Bound(this.transform)
 
@@ -64,6 +68,7 @@ export class MainComponent extends Component {
         this._coinController.clear()
         this._scoreController.clear()
         this._UIController.clear()
+        this._touchControll.clear()
 
         this._bound = null
         this._dogTransform= null

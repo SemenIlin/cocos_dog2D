@@ -9,7 +9,7 @@ export class DogComponent extends Component {
     @property(UITransform)
     public transform: UITransform
 
-    private _currentScale = new Vec3(1, 1, 1)
+    private _currentScale = new Vec3(1, 1, 1)  
 
     public playAnimation(state: number){
         switch(state){
