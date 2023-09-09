@@ -6,6 +6,7 @@ import { CoinController } from '../controller/CoinController'
 import { ScoreController } from '../controller/UI/ScoreController';
 import { UIController } from '../controller/UI/UIController';
 import { PlayerTouchControl } from '../controller/PlayerTouchControl';
+import { GlobalEvent } from '../event/GlobalEvent';
 const { ccclass, property } = _decorator;
 
 @ccclass('MainComponent')
@@ -50,6 +51,9 @@ export class MainComponent extends Component {
         this._bound = new Bound(this.transform)
 
         this._halfHeight = this.transform.height / 2
+
+        GlobalEvent.on("PAUSE", this.onPause, this)
+        GlobalEvent.on("PLAY", this.onPlay, this)
     }  
 
     protected update(dt: number): void {
@@ -61,9 +65,23 @@ export class MainComponent extends Component {
         this._dogMovement.move()
         this._bound.positionTracking(this._dogTransform)        
     }
+
+    // PRIVATE
+    private onPause(){
+        this._dogMovement.onPause()
+        this._touchControll.onPause()
+    }
+
+    private onPlay(){
+        this._dogMovement.onPlay()
+        this._touchControll.onPlay()
+    }
    
     // CLEAR
     protected onDestroy(): void {
+        GlobalEvent.off("PAUSE", this.onPause, this)
+        GlobalEvent.off("PLAY", this.onPlay, this)
+
         this._dogMovement.clear()
         this._coinController.clear()
         this._scoreController.clear()

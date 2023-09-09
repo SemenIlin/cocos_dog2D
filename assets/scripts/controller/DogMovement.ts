@@ -21,10 +21,7 @@ export  class DogMovement {
         this._dogComponent = canvas.getComponentInChildren(DogComponent)     
         
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
-        input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
-
-        GlobalEvent.on("PAUSE", this.onPause, this)
-        GlobalEvent.on("PLAY", this.onPlay, this)
+        input.on(Input.EventType.KEY_UP, this.onKeyUp, this);       
 
         GlobalEvent.on("DIRECTION_CHANGED",this.changeDirection, this)
     }
@@ -51,14 +48,7 @@ export  class DogMovement {
         }
     }
 
-    // PRIVATE
-
-    private changeDirection(){
-        const direction = PlayerData.getDirection()
-        this._dogComponent.playAnimation(direction)    
-    }
-
-    private onPause() {
+    public onPause() {
         this._dogComponent.pauseAnimation()
         PlayerData.clearDirection()
 
@@ -66,12 +56,18 @@ export  class DogMovement {
         input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
     }
 
-    private onPlay() {
+    public onPlay() {
         this._dogComponent.resumeAnimation()
 
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
-    }   
+    } 
+
+    // PRIVATE
+    private changeDirection(){
+        const direction = PlayerData.getDirection()
+        this._dogComponent.playAnimation(direction)    
+    }      
 
     private onKeyDown(event: EventKeyboard){
         switch(event.keyCode){

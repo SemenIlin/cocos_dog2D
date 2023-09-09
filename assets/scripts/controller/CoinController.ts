@@ -86,7 +86,9 @@ export class CoinController {
         this._coinList[coin.uuid] = coinComponent
 
         this._coinContainerTransform.node.addChild(coin)
-        const newPosition = new Vec3((this._coinContainerTransform.width / 2 - DELTA_HEIGHT) * Math.random(), this._halfHeight + DELTA_HEIGHT, 0)
+        const newPosition = new Vec3(
+            this._coinContainerTransform.width * (Math.random() - 0.5), 
+            this._halfHeight + DELTA_HEIGHT, 0)
         coin.position = newPosition        
     }
 
