@@ -10,7 +10,6 @@ const START_SPEED = 14
 export  class DogMovement {
     // STATE
     private _dogComponent: DogComponent
-    private _startPosition: Vec3    
 
     public speed: number = START_SPEED
     
@@ -22,7 +21,6 @@ export  class DogMovement {
     // INIT
     public constructor(canvas: Node) {
         this._dogComponent = canvas.getComponentInChildren(DogComponent) 
-        this._startPosition = this._dogComponent.node.position.clone()    
         
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);       
@@ -36,7 +34,8 @@ export  class DogMovement {
         PlayerData.clearDirection()
         
         this.speed = START_SPEED       
-        this._dogComponent.node.position = this._startPosition
+        const {y, z} = this._dogComponent.node.position.clone()
+        this._dogComponent.node.position = new Vec3(0, y, z)
         this._dogComponent.playAnimation(0)
     }
 
