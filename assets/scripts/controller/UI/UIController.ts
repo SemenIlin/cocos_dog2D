@@ -1,6 +1,7 @@
 import { _decorator, Node } from 'cc';
 import { PausePlayComponent, PausePlayView } from '../../component/UI/PausePlayComponent';
 import { GlobalEvent } from '../../event/GlobalEvent';
+import { PlayerData } from '../../data/PlayerData';
 const { ccclass } = _decorator;
 
 @ccclass('UIController')
@@ -20,12 +21,12 @@ export class UIController implements PausePlayView {
         this._pausePlayButtonComponent.init(this)
 
         this._isPause = false
+        GlobalEvent.on("GAME_OVER",this.onGameOver, this)
     }
 
     // INTERFACE
     public changeView(){
-        console.warn("CONTROLLER")
-        this._isPause = ! this._isPause
+        this._isPause = !this._isPause
 
         const { playFrame, pauseFrame } = this._pausePlayButtonComponent
 
@@ -34,14 +35,29 @@ export class UIController implements PausePlayView {
             GlobalEvent.emit("PAUSE")
         } else{
             this._pausePlayButtonComponent.spriteButton.spriteFrame = pauseFrame
-            GlobalEvent.emit("PLAY")
+
+            if (PlayerData.canGamePlay){
+                GlobalEvent.emit("PLAY")
+            } else {
+                PlayerData.setStartGame()
+            }
         }       
+    }
+
+    // PRIVATE
+    private onGameOver(){
+        this._isPause = true
+        const { playFrame } = this._pausePlayButtonComponent
+
+        this._pausePlayButtonComponent.spriteButton.spriteFrame = playFrame
+        GlobalEvent.emit("PAUSE")
     }
 
     // CLEAR
     public clear(){
+        GlobalEvent.on("GAME_OVER",this.onGameOver, this)
+
         this._pausePlayButtonComponent = null
         this._isPause = false
     }
-
 }

@@ -1,7 +1,7 @@
 import { _decorator, instantiate, Node, Prefab, UITransform, Vec3 } from 'cc';
 import { CoinComponent } from '../component/CoinComponent';
 import { Bound } from '../tools/Bound';
-import { GlobalEvent } from '../event/GlobalEvent';
+import { PlayerData } from '../data/PlayerData';
 const { ccclass } = _decorator;
 
 const DELTA_HEIGHT = 120
@@ -48,13 +48,13 @@ export class CoinController {
             if (coin.node.position.y <= -halfHeight - DELTA_HEIGHT){
                 this.deleteCoin(coin.node)
 
-                GlobalEvent.emit('CHANGE_SCORE', Math.floor(-coin.speed))
+                PlayerData.setGameOver()
             }
 
             if(bound.isCheckTouch(dogTransform,coin.transform)){
                 this.deleteCoin(coin.node)
 
-                GlobalEvent.emit('CHANGE_SCORE', Math.floor(coin.speed))
+                PlayerData.changeScore(Math.floor(coin.speed))
             }
         }
     }
@@ -67,6 +67,12 @@ export class CoinController {
             console.warn("CREATE")
             this._currentTime = 0
         }
+    }
+
+    public deleteAllCoins(){
+       for (let i = this._coinContainerTransform.node.children.length - 1; i >= 0; i--){
+            this.deleteCoin(this._coinContainerTransform.node.children[i])
+       }
     }
 
     public deleteCoin(coin: Node){
@@ -85,7 +91,7 @@ export class CoinController {
         coinComponent.speed = this.coinSpeed
         this._coinList[coin.uuid] = coinComponent
 
-        this._coinContainerTransform.node.addChild(coin)
+        this._coinContainerTransform.node.insertChild(coin, 0)
         const newPosition = new Vec3(
             this._coinContainerTransform.width * (Math.random() - 0.5), 
             this._halfHeight + DELTA_HEIGHT, 0)

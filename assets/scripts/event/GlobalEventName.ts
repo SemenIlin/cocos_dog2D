@@ -4,5 +4,9 @@ export enum GlobalEventName {
   PAUSE,
   PLAY,
 
-  DIRECTION_CHANGED
+  GAME_OVER,
+  START_GAME,
+
+  DIRECTION_CHANGED,
+  SPEED_CHANGED
 }

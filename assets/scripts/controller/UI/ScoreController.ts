@@ -1,26 +1,24 @@
 import { _decorator, Node } from 'cc';
 import { ScoreComponent } from '../../component/UI/ScoreComponent';
 import { GlobalEvent } from '../../event/GlobalEvent';
+import { PlayerData } from '../../data/PlayerData';
 const { ccclass } = _decorator;
 
 @ccclass('ScoreController')
 export class ScoreController  {
     // STATE
     private _scoreComponent: ScoreComponent
-    private _score: number
 
     // INIT
     public constructor(canvas: Node){
-        this._scoreComponent = canvas.getComponentInChildren(ScoreComponent)
-        this._score = 0
+        this._scoreComponent = canvas.getComponentInChildren(ScoreComponent)        
 
         GlobalEvent.on('CHANGE_SCORE', this.changeScore, this)
     }
 
     // PRIVATE
-    private changeScore(value: number){
-        this._score += value
-        this._scoreComponent.scoreLabel.string = this._score + ''
+    private changeScore(){
+        this._scoreComponent.scoreLabel.string = PlayerData.score + ''
     }
 
     // CLEAR
